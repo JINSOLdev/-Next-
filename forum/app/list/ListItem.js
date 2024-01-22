@@ -12,7 +12,7 @@ export default function ListItem({ result }) {
                         </Link>
                         <Link href={`/edit/${result[i]._id}`}>✏</Link>
                         <p
-                            onClick={() => {
+                            onClick={(e) => {
                                 fetch('/api/post/delete', {
                                     method: 'POST',
                                     body: result[i]._id,
@@ -24,8 +24,12 @@ export default function ListItem({ result }) {
                                             // 서버가 에러코드 전송 시 실행할 코드
                                         }
                                     })
-                                    .then((result) => {
+                                    .then(() => {
                                         // 성공 시 실행할 코드
+                                        e.target.parentElement.style.opacity = 0;
+                                        setTimeout(() => {
+                                            e.target.parentElement.style.display = 'none';
+                                        }, 1000);
                                     })
                                     .catch((error) => {
                                         // 인터넷 문제로 실패 시 실행할 코드
