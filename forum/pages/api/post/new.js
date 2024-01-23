@@ -1,6 +1,16 @@
 import { connectDB } from '@/util/database';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../auth/[...nextauth]';
 
 export default async function handler(req, res) {
+    let session = await getServerSession(req, res, authOptions);
+    // console.log(session.user.email);
+
+    if (session) {
+        req.body.author = session.user.email;
+    }
+    // console.log(req.body);
+
     if (req.method === 'POST') {
         try {
             const { title, content } = req.body;
@@ -14,10 +24,7 @@ export default async function handler(req, res) {
             const db = (await connectDB).db('forum');
 
             // 데이터베이스에 새로운 글 추가
-            await db.collection('post').insertOne({
-                title: title,
-                content: content,
-            });
+            await db.collection('post').insertOne(req.body);
 
             // return res.status(200).json('글 등록 성공');
             return res.status(200).redirect('/list');

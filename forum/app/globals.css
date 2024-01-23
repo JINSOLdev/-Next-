@@ -57,3 +57,6 @@ a {
     opacity: 1;
     transition: all 1s;
 }
+p {
+    cursor: pointer;
+}
