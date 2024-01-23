@@ -60,3 +60,9 @@ a {
 p {
     cursor: pointer;
 }
+.login {
+    margin-right: 10px;
+}
+.logout {
+    margin-left: 10px;
+}

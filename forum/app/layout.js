@@ -1,7 +1,7 @@
 import { Inter } from 'next/font/google';
 import './globals.css';
 import Link from 'next/link';
-import {LoginBtn, LogoutBtn} from './LogBtn';
+import { LoginBtn, LogoutBtn } from './LogBtn';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/pages/api/auth/[...nextauth]';
 
@@ -22,9 +22,14 @@ export default async function RootLayout({ children }) {
                     <Link href="/" className="logo">
                         AppleForum
                     </Link>
-                    <Link href="/list">List</Link>
-                    <LoginBtn></LoginBtn>
-                    <LogoutBtn></LogoutBtn>
+                    {session ? (
+                        <span>
+                            {`Welcome` + ' ' + session.user.name + '!'}
+                            <LogoutBtn />
+                        </span>
+                    ) : (
+                        <LoginBtn />
+                    )}
                 </div>
                 {children}
             </body>

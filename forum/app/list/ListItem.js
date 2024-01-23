@@ -14,7 +14,7 @@ export default function ListItem({ result }) {
                         <p
                             onClick={(e) => {
                                 fetch('/api/post/delete', {
-                                    method: 'POST',
+                                    method: 'DELETE',
                                     body: result[i]._id,
                                 })
                                     .then((r) => {
