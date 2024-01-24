@@ -6,26 +6,39 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcrypt';
 import axios from 'axios';
 
-// async function refreshAccessToken(token) {
-//     // 1. access token 재발급해달라고 POST요청
-//     const url = 'https://github.com/login/oauth/access_token';
-//     const params = {
-//         grant_type: 'refresh_token',
-//         refresh_token: token.refreshToken,
-//         clientId: process.env.CLIENT_ID,
-//         clientSecret: process.env.CLIENT_SECRET,
-//     };
+async function refreshAccessToken(token) {
+    // 1. access token 재발급해달라고 POST요청
+    const url = 'https://github.com/login/oauth/access_token';
+    const params = {
+        grant_type: 'refresh_token',
+        refresh_token: token.refreshToken,
+        clientId: process.env.CLIENT_ID,
+        clientSecret: process.env.CLIENT_SECRET,
+    };
 
-//     const res = await axios.post(url, null, { params: params });
-//     const refreshedTokens = await res.data;
-//     if (res.status !== 200) {
-//         console.log('실패', refreshedTokens);
-//     }
+    const res = await axios.post(url, null, { params: params });
+    const refreshedTokens = await res.data;
+    if (res.status !== 200) {
+        // console.log('실패', refreshedTokens);
+    }
 
-//     // 2. 재발급한거 출력해보기
-//     console.log('토큰 재발급한 거: ');
-//     console.log(refreshedTokens);
-// }
+    // 2. 재발급한거 출력해보기
+    // console.log('토큰 재발급한 거: ');
+    // console.log(refreshedTokens);
+
+    // 3. 이걸로 새로운 토큰 만들어서 return 해주기
+    let data = new URLSearchParams(refreshedTokens);
+    if (data.get('error') === null) {
+        return {
+            ...refreshedTokens,
+            accessToken: data.get('access_token'),
+            accessTokenExpires: Math.round(Date.now() / 1000) + Number(data.get('expires_in')),
+            refreshToken: data.get('refresh_token'),
+        };
+    } else {
+        return token;
+    }
+}
 
 export const authOptions = {
     providers: [
@@ -68,9 +81,9 @@ export const authOptions = {
     },
 
     // 기간설정은 무시됨, github은 access token 유효기간 8시간, refresh token 유효기간 6개월
-    // jwt: {
-    //     maxAge: 60,
-    // },
+    jwt: {
+        maxAge: 60,
+    },
 
     callbacks: {
         // 4. jwt 만들 때 실행되는 코드
@@ -91,49 +104,49 @@ export const authOptions = {
         },
 
         // (+) JWT 사용할 때마다 실행됨, return 오른쪽에 뭐 적으면 그걸 JWT로 만들어서 유저에게 보내줌
-        // async jwt({ token, account, user }) {
-        //     console.log('account', account);
-        //     console.log('user', user);
-        //     console.log('token', token);
+        async jwt({ token, account, user }) {
+            // console.log('account', account);
+            // console.log('user', user);
+            // console.log('token', token);
 
-        //     // 1. 첫 JWT 토큰 만들어주기 (첫 로그인시에만 실행)
-        //     if (account && user) {
-        //         return {
-        //             accessToken: account.access_token,
-        //             refreshToken: account.refresh_token,
-        //             accessTokenExpires: account.expires_at,
-        //             user,
-        //         };
-        //     }
+            //     // 1. 첫 JWT 토큰 만들어주기 (첫 로그인시에만 실행)
+            if (account && user) {
+                return {
+                    accessToken: account.access_token,
+                    refreshToken: account.refresh_token,
+                    accessTokenExpires: account.expires_at,
+                    user,
+                };
+            }
 
-        //     // 2. 남은 시간이 임박한 경우 access token 재발급하기
-        //     // 지금은 개발중이라 8시간 - 10초 남았을 때 재발급중
-        //     let remainTime = token.accessTokenExpires - Math.round(Date.now() / 1000);
-        //     if (remainTime < 60 * 60 * 8 * -10) {
-        //         console.log('유효기간 얼마 남지 않음');
-        //         let newJWT = await refreshAccessToken(token);
-        //         console.log('newJWT: ', newJWT);
-        //         return newJWT;
-        //     } else {
-        //         return token;
-        //     }
-        // },
+            //     // 2. 남은 시간이 임박한 경우 access token 재발급하기
+            //     // 지금은 개발중이라 8시간 - 10초 남았을 때 재발급중
+            let remainTime = token.accessTokenExpires - Math.round(Date.now() / 1000);
+            if (remainTime < 60 * 60 * 8 * -10) {
+                console.log('유효기간 얼마 남지 않음');
+                let newJWT = await refreshAccessToken(token);
+                console.log('newJWT: ', newJWT);
+                return newJWT;
+            } else {
+                return token;
+            }
+        },
 
         // getServerSession 실행 시 토큰에 있던 어떤 정보 뽑아서 컴포넌트로 보내줄지 결정 가능
-        // async session({ session, token }) {
-        //     session.user = token.user;
-        //     session.accessToken = token.accessToken;
-        //     session.accessTokenExpires = token.accessTokenExpires;
-        //     session.error = token.error;
-        //     return session;
-        // },
+        async session({ session, token }) {
+            session.user = token.user;
+            session.accessToken = token.accessToken;
+            session.accessTokenExpires = token.accessTokenExpires;
+            session.error = token.error;
+            return session;
+        },
     },
 
     adapter: MongoDBAdapter(connectDB),
     secret: 'password1234',
 };
 
-console.log('CLIENT_ID:', process.env.NEXT_PUBLIC_CLIENT_ID);
-console.log('CLIENT_SECRET:', process.env.NEXT_PUBLIC_CLIENT_SECRET);
+// console.log('CLIENT_ID:', process.env.NEXT_PUBLIC_CLIENT_ID);
+// console.log('CLIENT_SECRET:', process.env.NEXT_PUBLIC_CLIENT_SECRET);
 
 export default NextAuth(authOptions);
