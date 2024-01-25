@@ -19,7 +19,7 @@ export default function Comment(props) {
     return (
         <div>
             <hr></hr>
-            {data.length > 0 ? data.map((a, i) => <p key={i}>{a.content}</p>) : '댓글없음유'}
+            {data.length > 0 ? data.map((a, i) => <p key={i}>{a.content}</p>) : '댓글없음'}
             <input
                 onChange={(e) => {
                     setComment(e.target.value);
@@ -30,7 +30,7 @@ export default function Comment(props) {
                     fetch('/api/comment/new', {
                         method: 'POST',
                         body: JSON.stringify({ comment: comment, _id: props._id }),
-                    });
+                    }).then();
                 }}
             >
                 댓글전송

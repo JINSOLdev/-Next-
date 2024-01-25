@@ -22,6 +22,7 @@ export default async function RootLayout({ children }) {
                     <Link href="/" className="logo">
                         AppleForum
                     </Link>
+                    <Link href="/list">List</Link>
                     {session ? (
                         <span>
                             {`Welcome` + ' ' + session.user.name + '!'}
