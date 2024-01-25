@@ -4,15 +4,22 @@ import { useEffect, useState } from 'react';
 
 export default function Comment(props) {
     let [comment, setComment] = useState('');
+    let [data, setData] = useState([]);
 
-    // 쓸데없는 코드 보관함
-    useEffect(()=>{
-      fetch()
-    },[])
+    useEffect(() => {
+        fetch('/api/comment/list?id=' + props._id).then((r) =>
+            r.json().then((result) => {
+                // console.log(result);
+                setData(result);
+                // console.log(data)
+            })
+        );
+    }, []);
 
     return (
         <div>
-            <div>댓글목록보여줄부분</div>
+            <hr></hr>
+            {data.length > 0 ? data.map((a, i) => <p key={i}>{a.content}</p>) : '댓글없음유'}
             <input
                 onChange={(e) => {
                     setComment(e.target.value);
