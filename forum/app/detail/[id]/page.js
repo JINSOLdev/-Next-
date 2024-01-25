@@ -1,10 +1,16 @@
 import { connectDB } from '@/util/database';
 import { ObjectId } from 'mongodb';
 import Comment from './comment';
+import { notFound } from 'next/navigation';
+
 
 export default async function Detail(props) {
     const db = (await connectDB).db('forum');
     let result = await db.collection('post').findOne({ _id: new ObjectId(props.params.id) });
+
+    if (result === null){
+        return notFound()
+    }
 
     return (
         <div className="detailPage">
