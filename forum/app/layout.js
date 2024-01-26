@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { LoginBtn, LogoutBtn } from './LogBtn';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/pages/api/auth/[...nextauth]';
+import DarkMode from './DarkMode';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -18,7 +19,7 @@ export default async function RootLayout({ children }) {
     return (
         <html lang="en">
             <body>
-                <div className="navbar">
+                <div className="navbar" style={{ background: 'black'}}>
                     <Link href="/" className="logo">
                         AppleForum
                     </Link>
@@ -31,6 +32,7 @@ export default async function RootLayout({ children }) {
                     ) : (
                         <LoginBtn />
                     )}
+                    <DarkMode/>
                 </div>
                 {children}
             </body>
