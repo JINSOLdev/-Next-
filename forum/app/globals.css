@@ -69,3 +69,11 @@ p {
 /* .detailPage {
     background-color: lightgrey;
 } */
+
+.dark-mode .navbar {
+    background: #222;
+}
+
+.dark-mode .navbar a {
+    color: white;
+}

@@ -5,6 +5,7 @@ import { LoginBtn, LogoutBtn } from './LogBtn';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/pages/api/auth/[...nextauth]';
 import DarkMode from './DarkMode';
+import { cookies } from 'next/headers';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -15,11 +16,16 @@ export const metadata = {
 
 export default async function RootLayout({ children }) {
     let session = await getServerSession(authOptions);
-    console.log(session);
+    // console.log(session);
+
+    let res = cookies().get('mode');
+    console.log(res);
+
     return (
         <html lang="en">
-            <body>
-                <div className="navbar" style={{ background: 'black'}}>
+            {/* mode=dark인 경우 dark-mode 클래스명 부착하면 될 듯 */}
+            <body className={res !== undefined && res.value === 'dark' ? 'dark-mode' : ''}>
+                <div className="navbar">
                     <Link href="/" className="logo">
                         AppleForum
                     </Link>
@@ -32,7 +38,7 @@ export default async function RootLayout({ children }) {
                     ) : (
                         <LoginBtn />
                     )}
-                    <DarkMode/>
+                    <DarkMode />
                 </div>
                 {children}
             </body>
