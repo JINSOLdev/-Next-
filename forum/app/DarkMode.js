@@ -14,6 +14,7 @@ export default function DarkMode() {
     }, []);
     return (
         <span
+            id="moon"
             onClick={() => {
                 let cookie = ('; ' + document.cookie).split(`; mode=`).pop().split(';')[0];
                 if (cookie == 'light') {

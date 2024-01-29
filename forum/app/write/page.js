@@ -1,8 +1,9 @@
-import { useState } from "react";
+'use client';
+
+import { useState } from 'react';
 
 export default async function Write() {
-    let [src, setSrc] = useState('')
-
+    let [src, setSrc] = useState('');
 
     return (
         <div className="p-20">
@@ -23,20 +24,20 @@ export default async function Write() {
                     res = await res.json();
 
                     // S3 업로드
-                    const formData = new FormData()
-                    Object.entries({...res.fields, file}).forEach(([key, value])=>{
-                        formData.append(key, value)
-                    })
+                    const formData = new FormData();
+                    Object.entries({ ...res.fields, file }).forEach(([key, value]) => {
+                        formData.append(key, value);
+                    });
                     let uploadResult = await fetch(res.url, {
                         method: 'POST',
                         body: formData,
-                    })
-                    console.log(uploadResult)
+                    });
+                    console.log(uploadResult);
 
-                    if (uploadResult.ok){
-                        setSrc(uploadResult.url + '/' + filename)
-                    }else{
-                        console.log('실패')
+                    if (uploadResult.ok) {
+                        setSrc(uploadResult.url + '/' + filename);
+                    } else {
+                        console.log('실패');
                     }
                 }}
             />

@@ -19,7 +19,7 @@ export default async function RootLayout({ children }) {
     // console.log(session);
 
     let res = cookies().get('mode');
-    console.log(res);
+    // console.log(res);
 
     return (
         <html lang="en">
@@ -31,8 +31,8 @@ export default async function RootLayout({ children }) {
                     </Link>
                     <Link href="/list">List</Link>
                     {session ? (
-                        <span>
-                            {`Welcome` + ' ' + session.user.name + '!'}
+                        <span id="greeting" style={{ color: res !== undefined && res.value === 'dark' ? 'white' : 'black' }}>
+                            {`Welcome` + ' ' + session.user.name + ' !'}
                             <LogoutBtn />
                         </span>
                     ) : (
